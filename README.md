@@ -1,3 +1,7 @@
+showcase fork
+quick and dirty !!
+
+
 # sneak.vim :shoe:
 
 Sneak is a minimalist, versatile Vim *motion* plugin that jumps to any location specified by two characters.
