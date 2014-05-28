@@ -131,14 +131,18 @@ func! sneak#to(op, input, inputlen, count, repeatmotion, reverse, inclusive, str
     let nudge = sneak#util#nudge(!a:reverse) "special case for t
   endif
 
-  for i in range(1, max([1, skip])) "jump to the [count]th match
-    let matchpos = s.dosearch()
-    if 0 == max(matchpos)
-      break
-    else
-      let nudge = !a:inclusive
-    endif
-  endfor
+  if g:sneak#opt.streak
+    let matchpos = [1]
+  else
+    for i in range(1, max([1, skip])) "jump to the [count]th match
+      let matchpos = s.dosearch()
+      if 0 == max(matchpos)
+        break
+      else
+        let nudge = !a:inclusive
+      endif
+    endfor
+  endif
 
   if nudge && (!is_v || max(matchpos) > 0)
     call sneak#util#nudge(a:reverse) "undo nudge for t
@@ -161,7 +165,8 @@ func! sneak#to(op, input, inputlen, count, repeatmotion, reverse, inclusive, str
   "Might as well scope to window height (+/- 99).
   let l:top = max([0, line('w0')-99])
   let l:bot = line('w$')+99
-  let l:restrict_top_bot = '\%'.l:gt_lt.curlin.'l\%>'.l:top.'l\%<'.l:bot.'l'
+  "let l:restrict_top_bot = '\%'.l:gt_lt.curlin.'l\%>'.l:top.'l\%<'.l:bot.'l'
+  let l:restrict_top_bot = '\%>'.l:top.'l\%<'.l:bot.'l'
   let l:scope_pattern .= l:restrict_top_bot
   let s.match_pattern .= l:restrict_top_bot
   let curln_pattern  = l:match_bounds.'\%'.curlin.'l\%'.l:gt_lt.curcol.'v'
@@ -179,7 +184,9 @@ func! sneak#to(op, input, inputlen, count, repeatmotion, reverse, inclusive, str
         \ (s.prefix).(s.match_pattern).(s.search).'\|'.curln_pattern.(s.search))
 
   "enter streak-mode iff there are >=2 _additional_ on-screen matches.
-  let target = (2 == a:streak || (a:streak && g:sneak#opt.streak)) && !max(bounds) && s.hasmatches(2)
+  "let target = (2 == a:streak || (a:streak && g:sneak#opt.streak)) && !max(bounds) && s.hasmatches(2)
+        "\ ? sneak#streak#to(s, is_v, a:reverse): ""
+  let target = (2 == a:streak || (a:streak && g:sneak#opt.streak)) && !max(bounds)
         \ ? sneak#streak#to(s, is_v, a:reverse): ""
 
   if !is_op
