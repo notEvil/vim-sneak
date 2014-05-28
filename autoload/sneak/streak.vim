@@ -60,9 +60,6 @@ func! s:do_streak(s, v, reverse) "{{{
 
   let i = 0
   let overflow = [0, 0] "position of the next match (if any) after we have run out of target labels.
-
-  let tPos = getpos('.')
-  call cursor(line('w0'), 1)
   while 1
     " searchpos() is faster than 'norm! /'
     let p = searchpos(search_pattern, a:s.search_options_no_s, a:s.get_stopline())
@@ -85,7 +82,6 @@ func! s:do_streak(s, v, reverse) "{{{
 
     let i += 1
   endwhile
-  call cursor(tPos)
 
   call winrestview(w) | redraw
   let choice = sneak#util#getchar()
