@@ -386,3 +386,10 @@ endif
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
+
+
+func! sneak#mystreak(mode) abort
+  if sneak#streak#mystreak(s:getnchars(2, a:mode))
+    call s:attach_autocmds()
+  endif
+endf

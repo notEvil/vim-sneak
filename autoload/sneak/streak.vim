@@ -203,3 +203,124 @@ func! sneak#streak#init()
 endf
 
 call sneak#streak#init()
+
+
+func! sneak#streak#mystreak(input)
+  if empty(a:input) " user canceled
+    redraw | echo '' | return 0
+  endif
+
+  " preparation
+  if !hlexists('SneakStreakCursor') " workaround
+    hi link SneakStreakCursor Cursor
+  endif
+  call s:before()
+
+  "" define a bunch of variables
+  let firstline = line('w0')
+  let lastline = line('w$')
+
+  " create pattern
+  let prefix = sneak#search#get_cs(a:input, g:sneak#opt.use_ic_scs).'\V'
+  let restrict_top_bot = '\%>'.(firstline - 1).'l\%<'.(lastline + 1).'l'
+  let pattern = prefix.escape(a:input, '"\')
+
+  " labels
+  let labelsmain = 'fjdksla;' " home row
+  let labelsabove = 'rueiwoqpty' " above home row
+  let labelsbelow = 'ghvncmx,b' " between or below home row
+  let labelsextra = '234567890' " 1 and l are not distinguishable
+
+  let matches = []
+
+  let curLine = line('.')
+  let curCol = col('.')
+
+  let w = winsaveview()
+  call cursor(firstline, 1)
+
+  "" find matches
+  while 1
+    let [l, c] = searchpos(pattern, 'W', lastline) " search, moves cursor
+    let skippedfold = sneak#util#skipfold(l, 0) " move cursor to end of fold if inside one
+
+    if l == 0 || skippedfold == -1 " no match
+      break
+    elseif skippedfold == 1
+      continue
+    endif
+
+    " first value: euclidean dist (y stretched by 2), favors matches right of cursor a little bit
+    call add(matches, [pow((l - curLine) * 2, 2) + pow(c - curCol, 2), l < curLine, [l, c]])
+  endwhile
+
+  call winrestview(w)
+
+  if !len(matches)
+    call sneak#util#echo('not found')
+    return 0
+  endif
+  
+  " highlight matches
+  call sneak#hl#removehl()
+  let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
+
+  "" assign labels
+  call sort(matches, function('s:compareFirst'))
+
+  let imain = 0
+  let iabove = 0
+  let ibelow = 0
+  let iextra = 0
+
+  for [t, above, pos] in matches
+    if imain < len(labelsmain)
+      let c = strpart(labelsmain, imain, 1)
+      let imain += 1
+
+    elseif above && iabove < len(labelsabove)
+      let c = strpart(labelsabove, iabove, 1)
+      let iabove += 1
+
+    elseif !above && ibelow < len(labelsbelow)
+      let c = strpart(labelsbelow, ibelow, 1)
+      let ibelow += 1
+
+    elseif iextra < len(labelsextra)
+      let c = strpart(labelsextra, iextra, 1)
+      let iextra += 1
+
+    else
+      continue
+    endif
+
+    call s:placematch(c, pos)
+
+  endfor
+
+  redraw
+  let choice = sneak#util#getchar()
+  call s:after()
+
+  if has_key(s:matchmap, choice)
+    let p = s:matchmap[choice]
+    call cursor(p[0], p[1])
+  else
+    call sneak#hl#removehl()
+    return 0
+  endif
+
+  return 1
+endf
+
+func! s:compareFirst(a, b)
+  let x = a:a[0]
+  let y = a:b[0]
+  if x < y
+    return -1
+  elseif x == y
+    return 0
+  else
+    return 1
+  endif
+endf
