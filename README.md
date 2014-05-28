@@ -1,5 +1,22 @@
-showcase fork
-quick and dirty !!
+Changes:
+
+- added streak-only function sneak#mystreak("")
+
+asks for 2 characters, then assigns labels to targets, highlights them (same way streak does), asks for another character to jump to one of the labels
+
+only works in normal mode by now
+
+Labels:</br>
+
+at first the home row characters are used<br />
+then depending on the vertical direction to the match the characters above/below are used<br />
+when the previous two sets are depleted, uses numbers 2-9 (1 is omitted because it is easily mistaken by lower L)<br />
+
+labels are assigned in order of distance to current cursor position
+
+Getting Started:
+
+nnoremap ? :call sneak#mysneak('')\<cr>
 
 
 # sneak.vim :shoe:
