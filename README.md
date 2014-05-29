@@ -1,10 +1,8 @@
 Changes:
 
-- added streak-only function sneak#mystreak("")
+- added streak-only function sneak#mystreak(mode)
 
 asks for 2 characters, then assigns labels to targets, highlights them (same way streak does), asks for another character to jump to one of the labels
-
-only works in normal mode by now
 
 Labels:</br>
 
@@ -16,7 +14,9 @@ labels are assigned in order of distance to current cursor position
 
 Getting Started:
 
-nnoremap ? :call sneak#mysneak('')\<cr>
+    nmap ? <Plug>(MyStreak)
+    xmap ? <Plug>(MyStreak)
+    omap ? <Plug>(MyStreak)
 
 
 # sneak.vim :shoe:
