@@ -14,9 +14,9 @@ labels are assigned in order of distance to current cursor position
 
 Getting Started:
 
-nmap ? <Plug>(MyStreak)<br />
-xmap ? <Plug>(MyStreak)<br />
-omap ? <Plug>(MyStreak)<br />
+    nmap ? <Plug>(MyStreak)
+    xmap ? <Plug>(MyStreak)
+    omap ? <Plug>(MyStreak)
 
 
 # sneak.vim :shoe:
