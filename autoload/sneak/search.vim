@@ -8,7 +8,7 @@ func! sneak#search#new()
     " search pattern modifiers (case-sensitivity, magic)
     let self.prefix = sneak#search#get_cs(a:input, g:sneak#opt.use_ic_scs).'\V'
     " the escaped user input to search for
-    let self.search = escape(a:input, '"\')
+    let self.search = sneak#search#createpattern(a:input)
     " example: highlight string 'ab' after line 42, column 5 
     "          matchadd('foo', 'ab\%>42l\%5c', 1)
     let self.match_pattern = ''
@@ -80,3 +80,28 @@ endf
 
 "search object singleton
 let g:sneak#search#instance = sneak#search#new()
+
+
+func! sneak#search#createpattern(input)
+  let r = escape(a:input, '"\')
+
+  if g:sneak#opt.s2ws
+    if g:sneak#opt.s2ws == 1
+      let r = substitute(r, ' ', '\\s', 'g')
+    else
+      let r = substitute(r, ' ', '\\_s', 'g') " including EOL
+    endif
+  endif
+
+  if g:sneak#opt.dot2any
+    if g:sneak#opt.dot2any == 1
+      let r = substitute(r, '\.', '\\(\\w\\|\\_s\\)\\@!', 'g')
+      " character class not available in \V
+      " = not (word or whitespace or EOL)
+    else
+      let r = substitute(r, '\.', '\\S', 'g')
+    endif
+  endif
+
+  return r
+endf

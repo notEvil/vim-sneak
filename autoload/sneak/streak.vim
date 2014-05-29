@@ -222,8 +222,8 @@ func! sneak#streak#mystreak(input)
 
   " create pattern
   let prefix = sneak#search#get_cs(a:input, g:sneak#opt.use_ic_scs).'\V'
+  let pattern = prefix.sneak#search#createpattern(a:input)
   let restrict_top_bot = '\%>'.(firstline - 1).'l\%<'.(lastline + 1).'l'
-  let pattern = prefix.escape(a:input, '"\')
 
   " labels
   let labelsmain = 'fjdksla;' " home row

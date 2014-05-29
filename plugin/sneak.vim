@@ -24,6 +24,8 @@ func! sneak#init()
       \ ,'use_ic_scs'   : get(g:, 'sneak#use_ic_scs', 0)
       \ ,'map_netrw'    : get(g:, 'sneak#map_netrw', 1)
       \ ,'streak'       : get(g:, 'sneak#streak', 0) && (v:version >= 703) && has("conceal")
+      \ ,'s2ws'         : get(g:, 'sneak#s2ws', 0)
+      \ ,'dot2any'      : get(g:, 'sneak#dot2any', 0)
       \ }
 
   for k in ['f', 't'] "if user mapped f/t to Sneak, then disable f/t reset.
