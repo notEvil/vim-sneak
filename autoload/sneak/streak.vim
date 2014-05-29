@@ -302,14 +302,16 @@ func! sneak#streak#mystreak(input)
   let choice = sneak#util#getchar()
   call s:after()
 
-  if has_key(s:matchmap, choice)
-    let p = s:matchmap[choice]
-    call cursor(p[0], p[1])
-  else
+  if !has_key(s:matchmap, choice)
     call sneak#hl#removehl()
     return 0
   endif
 
+  " add current position to jumplist
+  norm! m'
+
+  let p = s:matchmap[choice]
+  call cursor(p[0], p[1])
   return 1
 endf
 
