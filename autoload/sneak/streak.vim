@@ -265,41 +265,56 @@ func! sneak#streak#mystreak(input)
   call sneak#hl#removehl()
   let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
 
-  "" assign labels
   call sort(matches, function('s:compareFirst'))
 
-  let imain = 0
-  let iabove = 0
-  let ibelow = 0
-  let iextra = 0
-
-  for [t, above, pos] in matches
-    if imain < len(labelsmain)
-      let c = strpart(labelsmain, imain, 1)
-      let imain += 1
-
-    elseif above && iabove < len(labelsabove)
-      let c = strpart(labelsabove, iabove, 1)
-      let iabove += 1
-
-    elseif !above && ibelow < len(labelsbelow)
-      let c = strpart(labelsbelow, ibelow, 1)
-      let ibelow += 1
-
-    elseif iextra < len(labelsextra)
-      let c = strpart(labelsextra, iextra, 1)
-      let iextra += 1
-
-    else
+  "" assign labels
+  while 1
+    let imain = 0
+    let iabove = 0
+    let ibelow = 0
+    let iextra = 0
+    let overflow = []
+  
+    for item in matches
+      let [t, above, pos] = item
+  
+      if imain < len(labelsmain)
+        let c = strpart(labelsmain, imain, 1)
+        let imain += 1
+  
+      elseif above && iabove < len(labelsabove)
+        let c = strpart(labelsabove, iabove, 1)
+        let iabove += 1
+  
+      elseif !above && ibelow < len(labelsbelow)
+        let c = strpart(labelsbelow, ibelow, 1)
+        let ibelow += 1
+  
+      elseif iextra < len(labelsextra)
+        let c = strpart(labelsextra, iextra, 1)
+        let iextra += 1
+  
+      else
+        call add(overflow, item)
+        continue
+      endif
+  
+      call s:placematch(c, pos)
+  
+    endfor
+  
+    redraw
+    let choice = sneak#util#getchar()
+  
+    if choice == "\<Tab>" && len(overflow) " continue with overflow
+      call s:after() | call s:before() " hack to restore highlighting
+      let matches = overflow
       continue
     endif
-
-    call s:placematch(c, pos)
-
-  endfor
-
-  redraw
-  let choice = sneak#util#getchar()
+  
+    break
+  endwhile
+  
   call s:after()
 
   if !has_key(s:matchmap, choice)
