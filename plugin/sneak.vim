@@ -393,3 +393,8 @@ func! sneak#mystreak(mode) abort
     call s:attach_autocmds()
   endif
 endf
+
+nnoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak('')<cr>
+xnoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak(visualmode())<cr>
+onoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak(v:operator)<cr>
+
