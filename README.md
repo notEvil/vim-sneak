@@ -7,6 +7,7 @@ asks for 2 characters, then assigns labels to targets, highlights them (same way
 at first uses characters on home row<br />
 then depending on the vertical direction to the match, uses characters above/below home row<br />
 when the previous two sets are depleted, uses numbers 2-9 (1 is omitted because it is easily mistaken by lower L)<br />
+if there are still matches unassigned, press `<tab>` to reassign labels
 
 labels are assigned in order of distance to current cursor position
 
