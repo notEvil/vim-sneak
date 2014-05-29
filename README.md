@@ -1,23 +1,40 @@
-Changes:
+#### Changes
 
-- added streak-only function sneak#mystreak(mode)
+- added streak-only function `sneak#mystreak(mode)`
 
-asks for 2 characters, then assigns labels to targets, highlights them (same way streak does), asks for another character to jump to one of the labels
+asks for 2 characters, then assigns labels to targets, highlights them (same way streak does), asks for another character and finally jumps to the selected target or aborts motion
 
-Labels:</br>
-
-at first the home row characters are used<br />
-then depending on the vertical direction to the match the characters above/below are used<br />
+at first uses characters on home row<br />
+then depending on the vertical direction to the match, uses characters above/below home row<br />
 when the previous two sets are depleted, uses numbers 2-9 (1 is omitted because it is easily mistaken by lower L)<br />
 
 labels are assigned in order of distance to current cursor position
 
-Getting Started:
+- added option `sneak#s2ws`
 
+`<space>` means whitespace
+
+if 0: match space literally (default)<br />
+if 1: match whitespace excluding newline<br />
+else: match whitespace including newline (recommended)
+
+- added option `sneak#dot2any`
+
+`.` means any character
+
+if 0: match dot literally (default)<br />
+if 1: match any character excluding whitespace+newline and word (recommended)<br />
+else: match any character excluding whitespace+newline<br />
+
+
+#### Getting Started
+
+    let sneak#s2ws = 2
+    let sneak#dot2any = 1
     nmap ? <Plug>(MyStreak)
     xmap ? <Plug>(MyStreak)
     omap ? <Plug>(MyStreak)
-
+    
 
 # sneak.vim :shoe:
 
