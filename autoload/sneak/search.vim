@@ -95,7 +95,7 @@ func! sneak#search#createpattern(input)
 
   if g:sneak#opt.dot2any
     if g:sneak#opt.dot2any == 1
-      let r = substitute(r, '\.', '\\(\\w\\|\\_s\\)\\@!', 'g')
+      let r = substitute(r, '\.', '\\(\\w\\|\\_s\\)\\@!\\.', 'g')
       " character class not available in \V
       " = not (word or whitespace or EOL)
     else
