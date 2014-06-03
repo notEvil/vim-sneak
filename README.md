@@ -1,17 +1,22 @@
 #### Changes
 
-- added streak-only function `sneak#mystreak(mode)`
+- sneak/streak alternative via `<Plug>(MyStreak)` and `<Plug>(MyStreakBackwards)`
 
-asks for 2 characters, then assigns labels to targets, highlights them (same way streak does), asks for another character and finally jumps to the selected target or aborts motion
+To shorten up things here I will assume `<Plug>(MyStreak)` is mapped to s and `<Plug>(MyStreakBackwards)` is mapped to S in every mode.
 
-at first uses characters on home row<br />
-then depending on the vertical direction to the match, uses characters above/below home row<br />
-when the previous two sets are depleted, uses numbers 2-9 (1 is omitted because it is easily mistaken by lower L)<br />
-if there are still matches unassigned, press `<tab>` to reassign labels
+`s{char}{char}` / `S{char}{char}` immediately enters streak mode. Matches in both directions, forward and backward, are labeled in order of distance to current cursor position. If there are more matches than labels then `<Tab>` will reset the labels to the next matches.
 
-labels are assigned in order of distance to current cursor position
+The following labels are used:
+- characters at home row
+- characters above home row (only for matches above the cursor level)
+- characters between or below home row (only for matches at or below cursor level)
+- 2 through 9 if the previous sets are depleted (1 is easily mistaken by lower L)
 
-- added option `sneak#s2ws`
+`s<cr>` / `S<cr>` reuses the last valid input and immediately jumps to the next/previous match.
+
+The previous commands may be prepended by a number, specifying the target to jump to. `s<cr>` is the same as `1s<cr>` and `3Sde` will immediately jump to the 3rd match for "de" (backward).
+
+- new option `sneak#s2ws`
 
 `<space>` means whitespace
 
@@ -19,7 +24,9 @@ if 0: match space literally (default)<br />
 if 1: match whitespace excluding newline<br />
 else: match whitespace including newline (recommended)
 
-- added option `sneak#dot2any`
+also affects default sneak/streak
+
+- new option `sneak#dot2any`
 
 `.` means any character
 
@@ -27,15 +34,18 @@ if 0: match dot literally (default)<br />
 if 1: match any character excluding whitespace+newline and word (recommended)<br />
 else: match any character excluding whitespace+newline<br />
 
+also affects default sneak/streak
 
 #### Getting Started
 
     let sneak#s2ws = 2
     let sneak#dot2any = 1
-    nmap ? <Plug>(MyStreak)
-    xmap ? <Plug>(MyStreak)
-    omap ? <Plug>(MyStreak)
-    
+    nmap s <Plug>(MyStreak)
+    nmap S <Plug>(MyStreakBackwards)
+    xmap s <Plug>(MyStreak)
+    xmap S <Plug>(MyStreakBackwards)
+    omap s <Plug>(MyStreak)
+    omap S <Plug>(MyStreakBackwards)
 
 # sneak.vim :shoe:
 
