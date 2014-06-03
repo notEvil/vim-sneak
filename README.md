@@ -6,11 +6,11 @@ To shorten up things here I will assume `<Plug>(MyStreak)` is mapped to s and `<
 
 `s{char}{char}` / `S{char}{char}` immediately enters streak mode. Matches in both directions, forward and backward, are labeled in order of distance to current cursor position. If there are more matches than labels then `<Tab>` will reset the labels to the next matches.
 
-The following labels are used:
-- characters at home row
-- characters above home row (only for matches above the cursor level)
-- characters between or below home row (only for matches at or below cursor level)
-- 2 through 9 if the previous sets are depleted (1 is easily mistaken by lower L)
+The following labels are used:<br />
+1. characters at home row<br />
+2. characters above home row (only for matches above the cursor level)<br />
+3. characters between or below home row (only for matches at or below cursor level)<br />
+4. 2 through 9 if the previous sets are depleted (1 is easily mistaken by lower L)
 
 `s<cr>` / `S<cr>` reuses the last valid input and immediately jumps to the next/previous match.
 
