@@ -259,6 +259,15 @@ func! sneak#streak#mystreak(input, n, reverse)
       let n -= 1
     endwhile
 
+    if firstline != line('w0')
+      let firstline = line('w0')
+      let lastline = line('w$')
+      let restrict_top_bot = '\%>'.(firstline - 1).'l\%<'.(lastline + 1).'l'
+
+      call sneak#hl#removehl()
+      let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
+    endif
+
     return 1
   endif
 
