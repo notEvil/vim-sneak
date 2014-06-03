@@ -205,25 +205,68 @@ endf
 call sneak#streak#init()
 
 
-func! sneak#streak#mystreak(input)
-  if empty(a:input) " user canceled
-    redraw | echo '' | return 0
-  endif
 
-  " preparation
-  if !hlexists('SneakStreakCursor') " workaround
-    hi link SneakStreakCursor Cursor
+func! s:createMyStreakMemory()
+  let r = {}
+  let r['prevInput'] = ''
+  return r
+endf
+
+let g:sneak#streak#mymemory = s:createMyStreakMemory()
+
+func! sneak#streak#mystreak(input, n, reverse)
+  " parse arguments
+  let input = a:input
+  let n = a:n
+  if empty(input)
+    let input = g:sneak#streak#mymemory['prevInput']
+    if empty(input)
+      redraw | echo '' | return 0
+    endif
+  elseif n == 1
+    let n = 0 " streak
   endif
-  call s:before()
+  let g:sneak#streak#mymemory['prevInput'] = input
 
   "" define a bunch of variables
   let firstline = line('w0')
   let lastline = line('w$')
 
   " create pattern
-  let prefix = sneak#search#get_cs(a:input, g:sneak#opt.use_ic_scs).'\V'
-  let pattern = prefix.sneak#search#createpattern(a:input)
+  let prefix = sneak#search#get_cs(input, g:sneak#opt.use_ic_scs).'\V'
+  let pattern = prefix.sneak#search#createpattern(input)
   let restrict_top_bot = '\%>'.(firstline - 1).'l\%<'.(lastline + 1).'l'
+
+  " highlight matches
+  call sneak#hl#removehl()
+  let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
+
+  if n " sneak
+    let n = min([n, 999])
+    let flags = a:reverse ? 'Wb' : 'W'
+
+    while n
+      let [l, c] = searchpos(pattern, flags)
+      let skippedfold = sneak#util#skipfold(l, 0)
+
+      if l == 0
+	call sneak#util#echo('not found')
+	break
+      elseif skippedfold == 1
+        continue
+      endif
+
+      let n -= 1
+    endwhile
+
+    return 1
+  endif
+
+  " prepare streak
+  if !hlexists('SneakStreakCursor') " workaround
+    hi link SneakStreakCursor Cursor
+  endif
+  call s:before()
 
   " labels
   let labelsmain = 'fjdksla;' " home row
@@ -233,12 +276,12 @@ func! sneak#streak#mystreak(input)
 
   let matches = []
 
+  let w = winsaveview()
   let curLine = line('.')
   let curCol = col('.')
 
-  let w = winsaveview()
   call cursor(firstline, 1)
-
+  
   "" find matches
   while 1
     let [l, c] = searchpos(pattern, 'W', lastline) " search, moves cursor
@@ -261,10 +304,6 @@ func! sneak#streak#mystreak(input)
     return 0
   endif
   
-  " highlight matches
-  call sneak#hl#removehl()
-  let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
-
   call sort(matches, function('s:compareFirst'))
 
   "" assign labels

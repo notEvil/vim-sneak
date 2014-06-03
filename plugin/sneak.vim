@@ -390,13 +390,17 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 
-func! sneak#mystreak(mode) abort
-  if sneak#streak#mystreak(s:getnchars(2, a:mode))
+func! sneak#mystreak(mode, reverse) abort
+  let cnt = v:count1
+  if sneak#streak#mystreak(s:getnchars(2, a:mode), cnt, a:reverse)
     call s:attach_autocmds()
   endif
 endf
 
-nnoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak('')<cr>
-xnoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak(visualmode())<cr>
-onoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak(v:operator)<cr>
+nnoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak('', 0)<cr>
+nnoremap <silent> <Plug>(MyStreakBackward) :<c-u>call sneak#mystreak('', 1)<cr>
+xnoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak(visualmode(), 0)<cr>
+xnoremap <silent> <Plug>(MyStreakBackward) :<c-u>call sneak#mystreak(visualmode(), 1)<cr>
+onoremap <silent> <Plug>(MyStreak) :<c-u>call sneak#mystreak(v:operator, 0)<cr>
+onoremap <silent> <Plug>(MyStreakBackward) :<c-u>call sneak#mystreak(v:operator, 1)<cr>
 
