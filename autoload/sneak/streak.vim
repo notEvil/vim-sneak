@@ -206,43 +206,22 @@ call sneak#streak#init()
 
 
 
-func! s:createMyStreakMemory()
-  let r = {}
-  let r['prevInput'] = ''
-  return r
-endf
-
-let g:sneak#streak#mymemory = s:createMyStreakMemory()
-
 func! sneak#streak#mystreak(input, n, reverse)
-  " parse arguments
-  let input = a:input
-  let n = a:n
-  if empty(input)
-    let input = g:sneak#streak#mymemory['prevInput']
-    if empty(input)
-      redraw | echo '' | return 0
-    endif
-  elseif n == 1
-    let n = 0 " streak
-  endif
-  let g:sneak#streak#mymemory['prevInput'] = input
-
   "" define a bunch of variables
   let firstline = line('w0')
   let lastline = line('w$')
 
   " create pattern
-  let prefix = sneak#search#get_cs(input, g:sneak#opt.use_ic_scs).'\V'
-  let pattern = prefix.sneak#search#createpattern(input)
+  let prefix = sneak#search#get_cs(a:input, g:sneak#opt.use_ic_scs).'\V'
+  let pattern = prefix.sneak#search#createpattern(a:input)
   let restrict_top_bot = '\%>'.(firstline - 1).'l\%<'.(lastline + 1).'l'
 
   " highlight matches
   call sneak#hl#removehl()
   let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
 
-  if n " sneak
-    let n = min([n, 999])
+  if a:n " sneak
+    let n = min([a:n, 999])
     let flags = a:reverse ? 'Wb' : 'W'
 
     while n

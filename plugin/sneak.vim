@@ -392,7 +392,24 @@ unlet s:cpo_save
 
 func! sneak#mystreak(mode, reverse) abort
   let cnt = v:count1
-  if sneak#streak#mystreak(s:getnchars(2, a:mode), cnt, a:reverse)
+
+  let t = s:st.input | let s:st.input = 'prev' " hack to get type of input
+  let input = s:getnchars(2, a:mode)
+  let s:st.input = t
+
+  if input == 'prev'
+    let input = t
+  else
+    let cnt = 0
+  endif
+
+  if empty(input)
+    return
+  endif
+  
+  let s:st.rst = 0 | let s:st.input = input | let s:st.inputlen = 2 " compatibility with sneak
+
+  if sneak#streak#mystreak(input, cnt, a:reverse)
     call s:attach_autocmds()
   endif
 endf
