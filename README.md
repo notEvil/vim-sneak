@@ -38,8 +38,8 @@ also affects default sneak/streak
 
 #### Getting Started
 
-    let sneak#s2ws = 2
-    let sneak#dot2any = 1
+    let g:sneak#s2ws = 2
+    let g:sneak#dot2any = 1
     nmap s <Plug>(MyStreak)
     nmap S <Plug>(MyStreakBackwards)
     xmap s <Plug>(MyStreak)
