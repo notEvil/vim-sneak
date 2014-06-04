@@ -399,8 +399,8 @@ func! sneak#mystreak(mode, reverse) abort
 
   if input == 'prev'
     let input = t
-  else
-    let cnt = 0
+  elseif cnt == 1
+    let cnt = 0 " streak
   endif
 
   if empty(input)
