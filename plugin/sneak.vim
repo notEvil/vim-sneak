@@ -393,20 +393,24 @@ unlet s:cpo_save
 func! sneak#mystreak(mode, reverse) abort
   let cnt = v:count1
 
-  let t = s:st.input | let s:st.input = 'prev' " hack to get type of input
+  let prev = s:st.input | let s:st.input = "\1" " hack to get type of input
   let input = s:getnchars(2, a:mode)
-  let s:st.input = t
+  let s:st.input = prev
 
-  if input == 'prev'
-    let input = t
+  if 2 < len(input) " if the user is too fast (reverse = 1), input contains useless characters
+    let input = "\1"
+  endif
+
+  if input == "\1"
+    let input = prev
   elseif cnt == 1
     let cnt = 0 " streak
   endif
 
-  if empty(input)
+  if len(input) == 0
     return
   endif
-  
+
   let s:st.rst = 0 | let s:st.input = input | let s:st.inputlen = 2 " compatibility with sneak
 
   if sneak#streak#mystreak(input, cnt, a:reverse)
