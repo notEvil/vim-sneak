@@ -1,6 +1,6 @@
 #### Changes
 
-- sneak/streak alternative via `<Plug>(MyStreak)` and `<Plug>(MyStreakBackwards)`
+- sneak/streak alternative via `<Plug>(MyStreak)` and `<Plug>(MyStreakBackward)`
 
 To shorten up things here I will assume `<Plug>(MyStreak)` is mapped to s and `<Plug>(MyStreakBackward)` is mapped to S in every mode.
 
