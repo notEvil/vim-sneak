@@ -2,13 +2,13 @@
 
 - sneak/streak alternative via `<Plug>(MyStreak)` and `<Plug>(MyStreakBackwards)`
 
-To shorten up things here I will assume `<Plug>(MyStreak)` is mapped to s and `<Plug>(MyStreakBackwards)` is mapped to S in every mode.
+To shorten up things here I will assume `<Plug>(MyStreak)` is mapped to s and `<Plug>(MyStreakBackward)` is mapped to S in every mode.
 
 `s{char}{char}` / `S{char}{char}` immediately enters streak mode. Matches in both directions, forward and backward, are labeled in order of distance to current cursor position. If there are more matches than labels then `<Tab>` will reset the labels to the next matches.
 
 The following labels are used:<br />
 1. characters at home row<br />
-2. characters above home row (only for matches above the cursor level)<br />
+2. characters above home row (only for matches above cursor level)<br />
 3. characters between or below home row (only for matches at or below cursor level)<br />
 4. 2 through 9 if the previous sets are depleted (1 is easily mistaken by lower L)
 
@@ -41,11 +41,11 @@ also affects default sneak/streak
     let g:sneak#s2ws = 2
     let g:sneak#dot2any = 1
     nmap s <Plug>(MyStreak)
-    nmap S <Plug>(MyStreakBackwards)
+    nmap S <Plug>(MyStreakBackward)
     xmap s <Plug>(MyStreak)
-    xmap S <Plug>(MyStreakBackwards)
+    xmap S <Plug>(MyStreakBackward)
     omap s <Plug>(MyStreak)
-    omap S <Plug>(MyStreakBackwards)
+    omap S <Plug>(MyStreakBackward)
 
 # sneak.vim :shoe:
 
