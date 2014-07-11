@@ -397,7 +397,7 @@ func! sneak#mystreak(mode, reverse) abort
   let input = s:getnchars(2, a:mode)
   let s:st.input = prev
 
-  if 2 < len(input) " if the user is too fast (reverse = 1), input contains useless characters
+  if 2 < len(input) " invalid input (Shift-Enter for instance)
     let input = "\1"
   endif
 

@@ -216,10 +216,6 @@ func! sneak#streak#mystreak(input, n, reverse)
   let pattern = prefix.sneak#search#createpattern(a:input)
   let restrict_top_bot = '\%>'.(firstline - 1).'l\%<'.(lastline + 1).'l'
 
-  " highlight matches
-  call sneak#hl#removehl()
-  let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
-
   if a:n " sneak
     let n = min([a:n, 999])
     let flags = a:reverse ? 'Wb' : 'W'
@@ -242,10 +238,10 @@ func! sneak#streak#mystreak(input, n, reverse)
       let firstline = line('w0')
       let lastline = line('w$')
       let restrict_top_bot = '\%>'.(firstline - 1).'l\%<'.(lastline + 1).'l'
-
-      call sneak#hl#removehl()
-      let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
     endif
+
+    call sneak#hl#removehl()
+    let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
 
     return 1
   endif
@@ -293,6 +289,10 @@ func! sneak#streak#mystreak(input, n, reverse)
   endif
   
   call sort(matches, function('s:compareFirst'))
+
+  " highlight matches
+  call sneak#hl#removehl()
+  let w:sneak_hl_id = matchadd('SneakPluginTarget', restrict_top_bot.pattern)
 
   "" assign labels
   while 1
@@ -343,9 +343,9 @@ func! sneak#streak#mystreak(input, n, reverse)
   endwhile
   
   call s:after()
+  call sneak#hl#removehl()
 
   if !has_key(s:matchmap, choice)
-    call sneak#hl#removehl()
     return 0
   endif
 
@@ -354,7 +354,7 @@ func! sneak#streak#mystreak(input, n, reverse)
 
   let p = s:matchmap[choice]
   call cursor(p[0], p[1])
-  return 1
+  return 0
 endf
 
 func! s:compareFirst(a, b)
