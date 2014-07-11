@@ -38,8 +38,20 @@ endf
 
 call sneak#init()
 
+func! sneak#state()
+  return deepcopy(s:st)
+endf
+
 func! sneak#is_sneaking()
   return exists("#SneakPlugin#CursorMoved#<buffer>")
+endf
+
+func! sneak#cancel()
+  call sneak#hl#removehl()
+  autocmd! SneakPlugin * <buffer>
+  if maparg('<esc>', 'n') =~# 'sneak#cancel' "teardown temporary <esc> mapping
+    silent! unmap <esc>
+  endif
 endf
 
 " convenience wrapper for key bindings/mappings
@@ -114,6 +126,7 @@ func! sneak#to(op, input, inputlen, count, repeatmotion, reverse, inclusive, str
   "      so this can be done in s.init() instead of here.
   call s.initpattern()
 
+  let s:st.rptreverse = a:reverse
   if !a:repeatmotion "this is a new (not repeat) invocation
     "persist even if the search fails, because the _reverse_ direction might have a match.
     let s:st.rst = 0 | let s:st.input = a:input | let s:st.inputlen = a:inputlen
@@ -180,6 +193,9 @@ func! sneak#to(op, input, inputlen, count, repeatmotion, reverse, inclusive, str
   let w:sneak_hl_id = matchadd('SneakPluginTarget',
         \ (s.prefix).(s.match_pattern).(s.search).'\|'.curln_pattern.(s.search))
 
+  "let user deactivate with <esc>
+  if maparg('<esc>', 'n') ==# ""|nmap <silent> <esc> :<c-u>call sneak#cancel()<cr><esc>|endif
+
   "enter streak-mode iff there are >=2 _additional_ on-screen matches.
   let target = (2 == a:streak || (a:streak && g:sneak#opt.streak)) && !max(bounds) && s.hasmatches(2)
         \ ? sneak#streak#to(s, is_v, a:reverse): ""
@@ -198,10 +214,10 @@ endf "}}}
 func! s:attach_autocmds()
   augroup SneakPlugin
     autocmd!
-    autocmd InsertEnter,WinLeave,BufLeave <buffer> call sneak#hl#removehl() | autocmd! SneakPlugin * <buffer>
+    autocmd InsertEnter,WinLeave,BufLeave <buffer> call sneak#cancel()
     "_nested_ autocmd to skip the _first_ CursorMoved event.
-    "NOTE: CursorMoved is _not_ triggered if there is 'typeahead', which means during a macro or other script...
-    autocmd CursorMoved <buffer> autocmd SneakPlugin CursorMoved <buffer> call sneak#hl#removehl() | autocmd! SneakPlugin * <buffer>
+    "NOTE: CursorMoved is _not_ triggered if there is 'typeahead', i.e. during a macro or script...
+    autocmd CursorMoved <buffer> autocmd SneakPlugin CursorMoved <buffer> call sneak#cancel()
   augroup END
 endf
 
@@ -254,7 +270,7 @@ func! s:getnchars(n, mode)
       endif
     else
       let s .= c
-      if &iminsert && sneak#util#strlen(s) >= a:n
+      if 1 == &iminsert && sneak#util#strlen(s) >= a:n
         "HACK: this can happen if the user entered multiple characters while we
         "were waiting to resolve a multi-char keymap.
         "example for keymap 'bulgarian-phonetic':
@@ -291,7 +307,7 @@ if g:sneak#opt.textobject_z
   omap Z  <Plug>Sneak_S
 endif
 
-" 1-char sneak, inclusive
+" 1-char 'enhanced f' sneak
 nnoremap <silent> <Plug>Sneak_f :<c-u>call sneak#wrap('', 1, 0, 1, 0)<cr>
 nnoremap <silent> <Plug>Sneak_F :<c-u>call sneak#wrap('', 1, 1, 1, 0)<cr>
 xnoremap <silent> <Plug>Sneak_f :<c-u>call sneak#wrap(visualmode(), 1, 0, 1, 0)<cr>
@@ -299,7 +315,7 @@ xnoremap <silent> <Plug>Sneak_F :<c-u>call sneak#wrap(visualmode(), 1, 1, 1, 0)<
 onoremap <silent> <Plug>Sneak_f :<c-u>call sneak#wrap(v:operator, 1, 0, 1, 0)<cr>
 onoremap <silent> <Plug>Sneak_F :<c-u>call sneak#wrap(v:operator, 1, 1, 1, 0)<cr>
 
-" 1-char sneak, exclusive
+" 1-char 'enhanced t' sneak
 nnoremap <silent> <Plug>Sneak_t :<c-u>call sneak#wrap('', 1, 0, 0, 0)<cr>
 nnoremap <silent> <Plug>Sneak_T :<c-u>call sneak#wrap('', 1, 1, 0, 0)<cr>
 xnoremap <silent> <Plug>Sneak_t :<c-u>call sneak#wrap(visualmode(), 1, 0, 0, 0)<cr>
@@ -323,23 +339,18 @@ endif
 
 if !hasmapto('<Plug>SneakNext', 'n') && mapcheck(';', 'n') ==# ''
   nmap ; <Plug>SneakNext
+  omap ; <Plug>SneakNext
+  xmap ; <Plug>SneakNext
 endif
 if !hasmapto('<Plug>SneakPrevious', 'n')
   if mapcheck(',', 'n') ==# ''
     nmap , <Plug>SneakPrevious
+    omap , <Plug>SneakPrevious
+    xmap , <Plug>SneakPrevious
   elseif mapcheck('\', 'n') ==# '' || mapcheck('\', 'n') ==# ','
     nmap \ <Plug>SneakPrevious
-  endif
-endif
-
-if !hasmapto('<Plug>SneakNext', 'o') && mapcheck(';', 'o') ==# ''
-  omap ; <Plug>SneakNext
-endif
-if !hasmapto('<Plug>SneakPrevious', 'o')
-  if mapcheck(',', 'o') ==# ''
-    omap , <Plug>SneakPrevious
-  elseif mapcheck('\', 'o') ==# '' || mapcheck('\', 'o') ==# ','
     omap \ <Plug>SneakPrevious
+    xmap \ <Plug>SneakPrevious
   endif
 endif
 
@@ -348,17 +359,6 @@ if !hasmapto('<Plug>VSneakForward') && !hasmapto('<Plug>Sneak_s', 'v') && mapche
 endif
 if !hasmapto('<Plug>VSneakBackward') && !hasmapto('<Plug>Sneak_S', 'v') && mapcheck('Z', 'x') ==# ''
   xmap Z <Plug>Sneak_S
-endif
-
-if !hasmapto('<Plug>VSneakNext') && !hasmapto('<Plug>SneakNext', 'v') && mapcheck(';', 'x') ==# ''
-  xmap ; <Plug>SneakNext
-endif
-if !hasmapto('<Plug>VSneakPrevious') && !hasmapto('<Plug>SneakPrevious', 'v')
-  if mapcheck(',', 'x') ==# ''
-    xmap , <Plug>SneakPrevious
-  elseif mapcheck('\', 'x') ==# ''
-    xmap \ <Plug>SneakPrevious
-  endif
 endif
 
 " redundant legacy mappings for backwards compatibility (must come _after_ the hasmapto('<Plug>Sneak_S') checks above)
