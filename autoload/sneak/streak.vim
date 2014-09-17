@@ -253,9 +253,9 @@ func! sneak#streak#mystreak(input, n, reverse)
   call s:before()
 
   " labels
-  let labelsmain = 'fjdksla;' " home row
-  let labelsabove = 'rueiwoqpty' " above home row
-  let labelsbelow = 'ghvncmx,b' " between or below home row
+  let labelsmain = 'tnseriao' " home row
+  let labelsabove = 'plfuwyq;gj' " above home row
+  let labelsbelow = 'dhvkcmx,z.' " between or below home row
   let labelsextra = '234567890' " 1 and l are not distinguishable
 
   let matches = []
