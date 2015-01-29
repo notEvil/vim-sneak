@@ -262,8 +262,8 @@ func! sneak#streak#mystreak(input, n, reverse)
   let matches = []
 
   let w = winsaveview()
-  let curLine = line('.')
-  let curCol = col('.')
+  let curWLine = winline()
+  let curWCol = wincol()
 
   call cursor(firstline, 1)
   
@@ -278,8 +278,11 @@ func! sneak#streak#mystreak(input, n, reverse)
       continue
     endif
 
+    let wl = winline()
+    let wc = wincol()
+
     " first value: euclidean dist (y stretched by 2), favors matches right of cursor a little bit
-    call add(matches, [pow((l - curLine) * 2, 2) + pow(c - curCol, 2), l < curLine, [l, c]])
+    call add(matches, [pow((wl - curWLine) * 2, 2) + pow(wc - curWCol, 2), wl < curWLine, [l, c]])
   endwhile
 
   call winrestview(w)
