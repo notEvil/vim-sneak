@@ -40,6 +40,15 @@ also affects default sneak/streak
 
     let g:sneak#s2ws = 2
     let g:sneak#dot2any = 1
+    " adjust or remove the following dictionary (defaults)
+    let g:sneak#myopt = {
+    \   'labels': {
+    \     'main': 'fjdksla;',
+    \     'above': 'rueiwoqpty',
+    \     'below': 'ghvncmx,z.',
+    \     'extra': '234567890'
+    \   }
+    \ }
     nmap s <Plug>(MyStreak)
     nmap S <Plug>(MyStreakBackward)
     xmap s <Plug>(MyStreak)

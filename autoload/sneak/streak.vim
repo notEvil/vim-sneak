@@ -206,6 +206,14 @@ endf
 call sneak#streak#init()
 
 
+let g:sneak#myopt = extend({
+\   'labels': {
+\     'main': 'fjdksla;',
+\     'above': 'rueiwoqpty',
+\     'below': 'ghvncmx,z.',
+\     'extra': '234567890'
+\   }
+\ }, (exists('g:sneak#myopt') ? g:sneak#myopt : {}))
 
 func! sneak#streak#mystreak(input, n, reverse)
   "" define a bunch of variables
@@ -254,10 +262,10 @@ func! sneak#streak#mystreak(input, n, reverse)
   call s:before()
 
   " labels
-  let labelsmain = 'tnseriao' " home row
-  let labelsabove = 'plfuwyq;gj' " above home row
-  let labelsbelow = 'dhvkcmx,z.' " between or below home row
-  let labelsextra = '234567890' " 1 and l are not distinguishable
+  let labelsmain = g:sneak#myopt.labels.main
+  let labelsabove = g:sneak#myopt.labels.above
+  let labelsbelow = g:sneak#myopt.labels.below
+  let labelsextra = g:sneak#myopt.labels.extra
 
   let matches = []
 
