@@ -9,7 +9,7 @@ func! sneak#search#new()
     let self.prefix = sneak#search#get_cs(a:input, g:sneak#opt.use_ic_scs).'\V'
     " the escaped user input to search for
     let self.search = sneak#search#createpattern(a:input)
-    " example: highlight string 'ab' after line 42, column 5 
+    " example: highlight string 'ab' after line 42, column 5
     "          matchadd('foo', 'ab\%>42l\%5c', 1)
     let self.match_pattern = ''
     " do not wrap                     search backwards
@@ -83,7 +83,7 @@ let g:sneak#search#instance = sneak#search#new()
 
 
 func! sneak#search#createpattern(input)
-  let r = escape(a:input, '"\')
+  let r = substitute(escape(a:input, '"\'), '\a', '\\[[=\0=]]', 'g')
 
   if g:sneak#opt.s2ws
     if g:sneak#opt.s2ws == 1

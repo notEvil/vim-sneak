@@ -1,10 +1,10 @@
 #### Changes
 
-- sneak/streak alternative via `<Plug>(MyStreak)` and `<Plug>(MyStreakBackward)`
+- alternative to label mode via `<Plug>MySneakLabel_s` and `<Plug>(MySneakLabel_S)`
 
-To shorten up things here I will assume `<Plug>(MyStreak)` is mapped to s and `<Plug>(MyStreakBackward)` is mapped to S in every mode.
+To shorten up things here I will assume `<Plug>MySneakLabel_s` is mapped to s and `<Plug>MySneakLabel_S` is mapped to S in every mode.
 
-`s{char}{char}` / `S{char}{char}` immediately enters streak mode. Matches in both directions, forward and backward, are labeled in order of distance to current cursor position. If there are more matches than labels then `<Tab>` will reset the labels to the next matches.
+`s{char}{char}` / `S{char}{char}` immediately enters label mode. Matches in both directions, forward and backward, are labeled in order of distance to current cursor position. If there are more matches than labels then `<Tab>` will reset the labels to the next matches.
 
 The following labels are used:<br />
 1. characters at home row<br />
@@ -49,35 +49,40 @@ also affects default sneak/streak
     \     'extra': '234567890'
     \   }
     \ }
-    nmap s <Plug>(MyStreak)
-    nmap S <Plug>(MyStreakBackward)
-    xmap s <Plug>(MyStreak)
-    xmap S <Plug>(MyStreakBackward)
-    omap s <Plug>(MyStreak)
-    omap S <Plug>(MyStreakBackward)
+    nmap s <Plug>(MySneakLabel_s)
+    nmap S <Plug>(MySneakLabel_S)
+    xmap s <Plug>(MySneakLabel_s)
+    xmap S <Plug>(MySneakLabel_S)
+    omap s <Plug>(MySneakLabel_s)
+    omap S <Plug>(MySneakLabel_S)
 
-# sneak.vim :shoe:
+sneak.vim :shoe:
+================
 
-Sneak is a minimalist, versatile Vim *motion* plugin that jumps to any location specified by two characters.
-It works with **multiple lines**, **operators** (including **repeat** `.`
-and **[surround]**), **[keymaps]**, **visual mode**, **[unicode]** ("multibyte"),
-and **macros**. Many details have been carefully balanced to minimize
-friction between *intent* and *action*.
+Sneak is a Vim plugin that jumps to any location specified by two characters. It
+works with **multiple lines**, **operators** (including repeat `.` and
+[surround]), **[keymaps]**, **visual** mode, **[unicode]** ("multibyte"), and
+**macros**.
 
-The plugin chooses sane defaults, easily changed via `<Plug>` mappings
-(see [`:help sneak`](doc/sneak.txt)).
+  - Preserves default `f`, `t`, `;` and `,` behavior
+  - Repeats operation with `.`
+  - Repeats motion with `;` and `,`
+  - Jumps immediately to the first match
+  - Updates the jumplist only for non-repeat motion
+  - Restricts to a vertical scope if *count* is used
+  - Provides *label-mode* for a minimalist
+  [EasyMotion](https://github.com/Lokaltog/vim-easymotion) alternative: `let g:sneak#label = 1`
+  - More at [FAQ](#faq)
 
-**New Option:** Use Sneak as a minimalist alternative
-to [EasyMotion](https://github.com/Lokaltog/vim-easymotion):
+Vim has many built-in motions, but "medium distance" is missing...
 
-    let g:sneak#streak = 1
+    l  f  t  %  'm  }  ]m  ]]  M  L         /
+                                       ^
+                                       |
+                                     sneak
 
-[unicode]: http://vimdoc.sourceforge.net/htmldoc/mbyte.html#UTF-8
-[keymaps]: http://vimdoc.sourceforge.net/htmldoc/mbyte.html#mbyte-keymap
-[surround]: https://github.com/tpope/vim-surround
-[count]: http://vimdoc.sourceforge.net/htmldoc/intro.html#[count]
-
-### Usage (Default)
+Usage (Default)
+---------------
 
 <a href="http://imgur.com/Jke0mIJ" title="Click to see a short demo"><img src="https://raw.github.com/justinmk/vim-sneak/fluff/assets/readme_diagram.png"></a>
 
@@ -117,52 +122,21 @@ via `z` (because `s` is taken by surround.vim).
   of the literal text `\}`
     * Press `.` to repeat the `gUz\}` operation.
 
-### Motivation
+Installation
+------------
 
-    l  f  t  %  'm  }  ]m  ]]  M  L     /
-                                     ^
-                                     |
-                                   sneak
-
-Vim's built-in motions cover many special cases, but it's awkward to move across 
-several lines to an arbitrary position: `f` is restricted to the current line,
-and `/` is [clunky](#faq) for medium-distance motion.
-
-Compare Sneak to Vim's built-in `/` and other plugins:
-
-  - minimum of **3 keystrokes**
-  - repeat motion via `;` and `,`
-  - repeat operation via `.`
-  - move anywhere, even offscreen
-  - jump immediately to first match
-  - only the *initial* invocation adds to the jumplist
-  - preserves default behavior of `f t F T ; ,`
-  - avoids noise in `/` history
-  - [count] prefix invokes *vertical scope*
-  - always literal: `s\*` jumps to the literal `\*`
-  - supports [mbyte-keymaps](http://vimdoc.sourceforge.net/htmldoc/mbyte.html#mbyte-keymap)
-    ([#47](https://github.com/justinmk/vim-sneak/issues/47))
-
-### Installation
-
-- Manual installation:
-  - Copy the files to your `.vim` directory (`_vimfiles` on Windows).
+- [vim-plug](https://github.com/junegunn/vim-plug)
+  - `Plug 'justinmk/vim-sneak'`
 - [Pathogen](https://github.com/tpope/vim-pathogen)
   - `cd ~/.vim/bundle && git clone git://github.com/justinmk/vim-sneak.git`
-- [Vundle](https://github.com/gmarik/vundle)
-  1. Add `Plugin 'justinmk/vim-sneak'` to .vimrc
-  2. Run `:PluginInstall`
-- [NeoBundle](https://github.com/Shougo/neobundle.vim)
-  1. Add `NeoBundle 'justinmk/vim-sneak'` to .vimrc
-  2. Run `:NeoBundleInstall`
-- [vim-plug](https://github.com/junegunn/vim-plug)
-  1. Add `Plug 'justinmk/vim-sneak'` to .vimrc
-  2. Run `:PlugInstall`
+- Manual installation:
+  - Copy the files to your `.vim` directory.
 
-If you want to repeat Sneak *operations* (like `dzab`) with dot `.`,
-then [repeat.vim](https://github.com/tpope/vim-repeat) is required.
+To repeat Sneak *operations* (like `dzab`) with dot `.`,
+[repeat.vim](https://github.com/tpope/vim-repeat) is required.
 
-### FAQ
+FAQ
+---
 
 #### Why not use `/`?
 
@@ -170,11 +144,14 @@ For the same reason that Vim has [motions](http://vimdoc.sourceforge.net/htmldoc
 like `f` and `t`: common operations should use as few keystrokes as possible.
 
 * `/ab<cr>` requires 33% more keystrokes than `sab`
-* Sneak remembers *only* the initial position in the Vim jumplist—so you can explore a trail of matches via `;`, then return to the start with a single `ctrl-o` or ``` `` ```
-* Sneak doesn't clutter your search history
-* Sneak is always literal (no need to escape special characters)
-* Sneak has smarter, subtler highlighting
-* Sneak *Streak-Mode*
+* sets *only* the initial position in the Vim jumplist—so you can explore a
+  trail of matches via `;`, then return to the start with a single `ctrl-o` or ``` `` ```
+* doesn't clutter your search history
+* input is always literal (no need to escape special characters)
+  * ignores accents ("equivalence class") when matching
+    ([#183](https://github.com/justinmk/vim-sneak/issues/183))
+* smarter, subtler highlighting
+* sneak *label-mode*
 
 #### Why not use `f`?
 
@@ -201,7 +178,7 @@ By the way: `cl` is equivalent to `s`, and `cc` is equivalent to `S`.
 #### How can I replace `f` and/or `t` with *one-character* Sneak?
 
 Sneak provides `<Plug>` convenience-mappings for `f` and `t` 1-character-sneak.
-These mappings do *not* invoke streak-mode, even if you have it enabled.
+These mappings do *not* invoke label-mode, even if you have it enabled.
 ```
     "replace 'f' with 1-char Sneak
     nmap f <Plug>Sneak_f
@@ -219,13 +196,9 @@ These mappings do *not* invoke streak-mode, even if you have it enabled.
     omap T <Plug>Sneak_T
 ```
 
-#### I want to use an "f-enhancement" plugin simultaneously with Sneak
+Related
+-------
 
-Sneak is intended to replace the so-called [f-enhancement plugins](#related).
-You can use both, but Sneak won't be able to hook into `f`, which means
-`;` and `,` will always repeat the last Sneak.
-
-### Related
 * [Seek](https://github.com/goldfeld/vim-seek)
 * [EasyMotion](https://github.com/Lokaltog/vim-easymotion)
 * [smalls](https://github.com/t9md/vim-smalls)
@@ -234,16 +207,12 @@ You can use both, but Sneak won't be able to hook into `f`, which means
 * [vim-extended-ft](https://github.com/svermeulen/vim-extended-ft)
 * [Fanf,ingTastic;](https://github.com/dahu/vim-fanfingtastic)
 
-### Bugs
-
-Sneak tries to be well-behaved and annoyance-free. If you find a bug,
-please report it, and perhaps include the output of:
-
-    :call sneak#debug#report()
-
-Sneak is tested on a 10-MB, 400k-lines, syntax-highlighted file with 
-Vim 7.2.330, 7.3, 7.4.
-
-### License
+License
+-------
 
 Copyright © Justin M. Keyes. Distributed under the MIT license.
+
+[unicode]: http://vimdoc.sourceforge.net/htmldoc/mbyte.html#UTF-8
+[keymaps]: http://vimdoc.sourceforge.net/htmldoc/mbyte.html#mbyte-keymap
+[surround]: https://github.com/tpope/vim-surround
+[count]: http://vimdoc.sourceforge.net/htmldoc/intro.html#[count]
